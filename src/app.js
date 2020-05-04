@@ -19,6 +19,7 @@ mongoose.connect(process.env.DATABASE_CONNECTION_STRING,{
 
 //Recuperamos a conexão para que possamos manipular determinados eventos
 const db = mongoose.connection;
+const Mentions = require('./models/mentions');
 
 db.on('connected', () => {
     console.log('Mongoose default connection is open');
@@ -40,5 +41,9 @@ process.on('SIGINT', () => {
 // Load routes
 const indexRoutes = require('./routes/index-routes');
 app.use('/', indexRoutes);
+
+// Mentions Router
+const mentionsRoutes = require('./routes/mentions-routes');
+app.use('/mentions', mentionsRoutes);
 
 module.exports = app;
