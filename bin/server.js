@@ -1,9 +1,8 @@
-// Dependencias necessárias para a subida do servidor
 const app = require('../src/app');
 const http = require('http');
 const debug = require('debug')('nodestr:server');
 
-// Função para definir a porta em que vamos expor a nossa aplicação
+// PORT // based on express-generator
 function normalizePort(val) {
   const port = parseInt(val, 10);
 
@@ -21,7 +20,7 @@ function normalizePort(val) {
 const port = normalizePort(process.env.PORT || 3000);
 app.set('port', port);
 
-// função que ira tratar possiveis erros
+// error handler
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -43,14 +42,14 @@ function onError(error) {
   }
 }
 
-// função que vai ficar ouvindo o nosso servidor
+// listener handler
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
 
-// Servidor propriamente
+// server
 const server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);

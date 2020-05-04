@@ -1,28 +1,29 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
 require('dotenv').config();
-
-// O Express é um framework para aplicativo da web do Node.js mínimo e flexível que fornece um conjunto robusto de recursos para aplicativos web e móvel.
 
 // App
 const app = express();
 
-//Parametros de configuração do mongoose
-//estamos usando a conection string para o mongo atlas
-mongoose.connect(process.env.DATABASE_CONNECTION_STRING,{
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+// Database
+mongoose.connect(process.env.DATABASE_CONNECTION_STRING, {
     useUnifiedTopology: true,
     useFindAndModify: true,
     useNewUrlParser: true,
     useCreateIndex: true 
 });
 
-//Recuperamos a conexão para que possamos manipular determinados eventos
 const db = mongoose.connection;
-const Mentions = require('./models/mentions');
-
+  
 db.on('connected', () => {
     console.log('Mongoose default connection is open');
+});
+
+db.on('error', err => {
+    console.log(`Mongoose default connection has occured \n${err}`);
 });
 
 db.on('disconnected', () => {
@@ -30,20 +31,23 @@ db.on('disconnected', () => {
 });
 
 process.on('SIGINT', () => {
-    db.close(() =>{
+    db.close(() => {
         console.log(
-            'Mongoose default connection is disconnected due to application termination'
+        'Mongoose default connection is disconnected due to application termination'
         );
         process.exit(0);
-    })
-})
+    });
+});
+
+// Load models
+const Mentions = require('./models/mentions');
 
 // Load routes
 const indexRoutes = require('./routes/index-routes');
 app.use('/', indexRoutes);
 
-// Mentions Router
 const mentionsRoutes = require('./routes/mentions-routes');
 app.use('/mentions', mentionsRoutes);
+
 
 module.exports = app;
